@@ -76,8 +76,7 @@ This pipeline supports datasets of varying sizes and origins:
 - **Data format**: 10x Genomics `.h5`
 - **Visuals**: UMAP, PCA, Violin plots, Feature plots, Heatmaps
 
-## 🧪 Key Visualizations
-
+## Key Visualizations
 ### 1. Violin Plot of Cell QC Metrics
 Displays distribution of detected genes, UMI counts, and mitochondrial read fraction.
 <img width="410" alt="Screenshot 2025-04-20 at 9 48 27 PM" src="https://github.com/user-attachments/assets/b8187b4c-04dc-435c-9a05-3dacb2804109" />
