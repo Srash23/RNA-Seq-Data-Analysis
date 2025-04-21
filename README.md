@@ -1,91 +1,99 @@
-# RNA-Seq Data Analysis for Differential Gene Expression
+# Seurat-Based Single-Cell RNA-seq Analysis of Mouse Brain Cortex
 
-## Introduction
+This repository documents a detailed scRNA-seq analysis pipeline built using **Seurat** to explore transcriptomic diversity in mouse brain cortex samples, downsampled from a larger dataset for memory efficiency. 
 
-This project focuses on RNA sequencing (RNA-Seq) data analysis to investigate differential gene expression between experimental conditions. By leveraging bioinformatics tools, the study aims to identify significantly upregulated and downregulated genes, helping to understand underlying biological mechanisms.
+## Project Overview
+This project processes and analyzes single-cell RNA-seq data from a filtered 10x Genomics matrix of mouse brain samples (Alzheimer's model). We create a Seurat object, perform quality control, normalization, PCA, UMAP visualization, clustering at multiple resolutions, and marker gene identification.
 
-## Why This Analysis is Important
+## Objectives
+- Load and structure raw gene expression data into a Seurat object
+- Downsample cells for manageable computation
+- Normalize and scale the data
+- Run PCA and UMAP for dimensionality reduction
+- Cluster cells at increasing resolutions
+- Identify and visualize marker genes
 
-1. Identify genes with altered expression levels under different conditions.
+## Dataset Description
+- Source: 10x Genomics h5 file containing multi-modal data
+- Total cells: ~33,459
+- Features: ~32,286 genes
+- Subsampled to: 15,000 cells
 
-2. Understand molecular pathways associated with diseases.
+## Pipeline Summary
 
-3. Develop potential biomarkers for diagnostics and therapeutics.
+### 1. Data Input and Preprocessing
+- Load 10X `.h5` file using `Read10X_h5()`
+- Retain only the `Gene Expression` matrix
+- Create a Seurat object: `CreateSeuratObject()`
+- Downsample to 15,000 cells: `subset(..., downsample=15000)`
 
-3. Gain insights into regulatory networks governing cellular processes.
+### 2. Quality Control
+- Calculate mitochondrial content: `PercentageFeatureSet()`
+- Violin plots of QC metrics: `VlnPlot()`
+- Scatter plot of gene vs UMI counts: `FeatureScatter()`
 
-## Workfllow
-![Workflow Diagram - visual selection](https://github.com/user-attachments/assets/eddf8a23-f404-46b0-9dd0-ae7ad542954e)
-## Installation & Dependencies
+### 3. Normalization & Feature Selection
+- Normalize data: `NormalizeData()`
+- Find highly variable genes: `FindVariableFeatures()`
 
-Ensure the following dependencies are installed:
+### 4. Scaling & Dimensionality Reduction
+- Scale data: `ScaleData()`
+- PCA computation: `RunPCA()`
+- Extract PCA loadings for interpretation
 
-1. pip install numpy pandas matplotlib seaborn statsmodels scipy bioinfokit
+### 5. UMAP Visualization
+- Run UMAP: `RunUMAP(dims=1:10)`
+- UMAP plots across resolutions: `DimPlot()`
 
-2. Additional dependencies like DESeq2 may be required for more advanced statistical analysis.
+### 6. Clustering at Multiple Resolutions
+- Resolutions tested: 0.02 to 0.3
+- Cluster assignments: `FindClusters()`
+- Visualize clusters on UMAP and PCA
 
-## Methodology
+### 7. Marker Gene Analysis
+- Use `FindMarkers()` for specific cluster comparisons
+- Use `FindAllMarkers()` for top genes across all clusters
+- Visualize expression via:
+  - `VlnPlot()`
+  - `FeaturePlot()`
+  - `DoHeatmap()`
 
-**1. Data Import & Preprocessing**
+## Key Results
+- Identified distinct clusters of brain cell types with high confidence
+- Cluster 8 markers: **Flt1, Slco1a4, Mecom, Ptprb**
+- Cluster 5 markers: **Hexb, Ctss, Inpp5d**
+- Top variable genes included **Apoe, Zbtb20, Slc1a3, Gfap**
 
-i. Load count matrix and metadata.
+## Scalability
+This pipeline supports datasets of varying sizes and origins:
+- Can handle >30,000 cells with Seurat’s sparse matrix support
+- Scalable UMAP and PCA via reduced dimensions
+- Easily adjustable resolution settings for fine-tuned clustering
+- Compatible with extended workflows like label transfer, multi-modal integration (e.g., ATAC+RNA), and trajectory analysis
+- 
+## Tech Stack
+- **R**: Seurat, ArchR, ggplot2, dplyr, Matrix
+- **Data format**: 10x Genomics `.h5`
+- **Visuals**: UMAP, PCA, Violin plots, Feature plots, Heatmaps
 
-ii. Perform quality control checks.
+## 🧪 Key Visualizations
 
-**2. Data Normalization**
+### 1. Violin Plot of Cell QC Metrics
+Displays distribution of detected genes, UMI counts, and mitochondrial read fraction.
+<img width="410" alt="Screenshot 2025-04-20 at 9 48 27 PM" src="https://github.com/user-attachments/assets/b8187b4c-04dc-435c-9a05-3dacb2804109" />
 
-i. Normalize raw counts using TPM (Transcripts Per Million) or RPKM (Reads Per Kilobase Million).
+### 2. Violin Plots for Marker Genes
+Expression of `Adgrl3` and `Hexb` across clusters, highlighting cluster-specific enrichment.
+<img width="414" alt="Screenshot 2025-04-20 at 9 49 13 PM" src="https://github.com/user-attachments/assets/dc37b665-b6b3-4d20-898d-4024c0029ff3" />
 
-ii. Differential Expression Analysis (DEA)
+### 3. Gene Expression Feature Plots on UMAP
+Spatial distribution of genes like `Synpo2`, `Btbd11`, `Gja1`, and `Cnr1` across the UMAP space.
+<img width="415" alt="Screenshot 2025-04-20 at 9 49 30 PM" src="https://github.com/user-attachments/assets/15750d59-24cf-4790-90ae-8acc295ba18d" />
 
-iii. Statistical comparison using log2 fold change and adjusted p-values.
+## Insights & Applications
+- Captures heterogeneity in mouse brain cell populations
+- Highlights transcriptional signatures in Alzheimer’s disease model
+- Serves as a foundation for downstream annotation or integration workflows
 
-**3. Gene Ontology (GO) & Pathway Analysis**
-
-i. Identify enriched pathways using KEGG and GO terms.
-
-**4. Data Visualization**
-
-i. Generate plots such as:
-
-ii. Volcano Plot (Significant genes based on log2 fold change)
-
-iii. Heatmap (Cluster expression profiles)
-
-iv. PCA Plot (Principal component analysis for sample variation)
-
-## Results & Findings
-
-1. Identified top differentially expressed genes (DEGs).
-
-2. Significant enrichment in biological pathways linked to the condition.
-
-3. Upregulated genes associated with immune response and cell signaling.
-
-4. Downregulated genes involved in metabolic and repair mechanisms.
-
-## Key Insights
-
-**1. Differentially Expressed Genes (DEGs):** Identification of significant upregulated and downregulated genes that play critical roles in the biological condition under study.
-
-**2. Pathway Enrichment:** Key pathways affected by gene expression changes, revealing potential therapeutic targets.
-
-**3. Principal Component Analysis (PCA):** Distinct clustering of samples, highlighting biological variability.
-
-**4. Gene Ontology (GO) Analysis:** Functional classification of genes based on biological processes, molecular functions, and cellular components.
-
-**5. Volcano Plot Interpretation:** Visual representation of significant gene expression changes.
-
-**6. Hierarchical Clustering:** Identification of gene expression patterns across different samples.
-
-**7. Biological Relevance:** Integration of findings with known literature, providing insights into disease mechanisms and regulatory pathways.
-
-**8. Potential for Therapeutic Targeting:** Highlighting genes that could be investigated further for drug development.
-
-## Conclusion
-This RNA-Seq analysis provides a comprehensive view of differential gene expression, pathway enrichment, and the biological significance of transcriptomic variations. By leveraging robust statistical models and computational techniques, the study effectively identifies genes associated with specific biological conditions. The findings underscore the importance of RNA sequencing in uncovering molecular mechanisms underlying various diseases, guiding targeted therapeutic approaches, and improving precision medicine strategies. Future enhancements could integrate multi-omics data, improving predictive modeling and expanding our understanding of gene regulation networks.
-
-
-
-
-
+## License
+MIT License
