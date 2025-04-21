@@ -70,7 +70,7 @@ This pipeline supports datasets of varying sizes and origins:
 - Scalable UMAP and PCA via reduced dimensions
 - Easily adjustable resolution settings for fine-tuned clustering
 - Compatible with extended workflows like label transfer, multi-modal integration (e.g., ATAC+RNA), and trajectory analysis
-- 
+
 ## Tech Stack
 - **R**: Seurat, ArchR, ggplot2, dplyr, Matrix
 - **Data format**: 10x Genomics `.h5`
